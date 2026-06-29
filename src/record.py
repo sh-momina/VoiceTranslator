@@ -1,11 +1,28 @@
+import os
+import time
+import queue
+
+import numpy as np
 import sounddevice as sd
 from scipy.io.wavfile import write
-import time
-import os
-from config import INPUT_AUDIO
-from config import SAMPLE_RATE
-from config import CHANNELS
-from config import RECORD_SECONDS
+
+from config import (
+    INPUT_AUDIO,
+    SAMPLE_RATE,
+    CHANNELS,
+    BLOCK_DURATION,
+    SILENCE_DURATION,
+)
+
+audio_queue = queue.Queue()
+
+
+def audio_callback(indata, frames, time_info, status):
+
+    if status:
+        print(status)
+
+    audio_queue.put(indata.copy())
 
 
 def record_audio():
@@ -14,42 +31,89 @@ def record_audio():
     print(" Voice Recorder")
     print("==============================")
 
-    input_folder = "audio/input"
-    os.makedirs(input_folder, exist_ok=True)
+    os.makedirs("audio/input", exist_ok=True)
 
-    output_file = INPUT_AUDIO
+    print("Waiting for speech...\n")
 
-    input("Press Enter and start speaking...")
+    frames = []
 
-    print("\nRecording...")
+    recording = False
 
-    start_time = time.perf_counter()
+    silence_blocks = 0
 
-    audio = sd.rec(
-        int(RECORD_SECONDS * SAMPLE_RATE),
-        samplerate=SAMPLE_RATE,
-        channels=CHANNELS,
-        dtype="int16"
+    max_silence_blocks = int(
+        SILENCE_DURATION / BLOCK_DURATION
     )
 
-    sd.wait()
+    start_time = None
+
+    with sd.InputStream(
+
+        samplerate=SAMPLE_RATE,
+
+        channels=CHANNELS,
+
+        dtype="float32",
+
+        blocksize=int(SAMPLE_RATE * BLOCK_DURATION),
+
+        callback=audio_callback
+
+    ):
+
+        while True:
+
+            chunk = audio_queue.get()
+
+            volume = np.sqrt(np.mean(chunk ** 2))
+
+            print(f"Volume : {volume:.5f}")
+
+            if not recording:
+
+                if volume > 0.01:
+
+                    print("\nSpeech Detected\n")
+
+                    recording = True
+
+                    start_time = time.perf_counter()
+
+                    frames.append(chunk)
+
+            else:
+
+                frames.append(chunk)
+
+                if volume > 0.01:
+
+                    silence_blocks = 0
+
+                else:
+
+                    silence_blocks += 1
+
+                    if silence_blocks >= max_silence_blocks:
+
+                        break
+
+    audio = np.concatenate(frames)
+
+    write(
+        INPUT_AUDIO,
+        SAMPLE_RATE,
+        (audio * 32767).astype(np.int16)
+    )
 
     end_time = time.perf_counter()
 
-    write(
-        output_file,
-        SAMPLE_RATE,
-        audio
-    )
+    print("Recording Finished")
+    print(f"Saved : {INPUT_AUDIO}")
+    print(f"Duration : {end_time-start_time:.2f} sec")
 
-    print("Recording Finished.")
-
-    print(f"Saved at : {output_file}")
-
-    print(f"Recording Time : {end_time - start_time:.2f} seconds")
-
-    return output_file
+    return INPUT_AUDIO
 
 
 if __name__ == "__main__":
+
     record_audio()
