@@ -65,6 +65,16 @@ def record_audio():
 
             chunk = audio_queue.get()
 
+            # ----------------- #
+            
+            import shared
+            if shared.playing_audio.is_set():
+                return None
+
+            chunk = audio_queue.get()
+
+            # ----------------- #
+
             volume = np.sqrt(np.mean(chunk ** 2))
 
             # print(f"Volume : {volume:.5f}")

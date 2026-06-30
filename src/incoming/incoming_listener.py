@@ -21,7 +21,10 @@ class IncomingListener(Thread):
                     time.sleep(0.1)
                     
 
-                audio = capture_system_audio(seconds=3)
+                # audio = capture_system_audio(seconds=3)
+                # audio = capture_system_audio(seconds=1)
+                audio = capture_system_audio()
+
 
                 if audio is None:
                     continue
