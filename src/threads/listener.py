@@ -3,7 +3,7 @@ from threading import Thread
 from shared import audio_queue
 from shared import running
 
-from record import record_audio
+from record_stream import record_audio
 
 
 class ListenerThread(Thread):
