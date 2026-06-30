@@ -1,4 +1,5 @@
 # Audio Files
+import uuid
 
 INPUT_AUDIO = "audio/input/recording.wav"
 
@@ -37,8 +38,8 @@ MAX_SILENCE_MS = 800        # Stop after 0.8 sec silence
 PRE_SPEECH_MS = 300         # Keep a little audio before speech starts
 
 # Audio Files
-INPUT_AUDIO = "audio/input/recording.wav"
-OUTPUT_AUDIO = "audio/output/output.mp3"
+INPUT_AUDIO = "audio/outgoing/recording.wav"
+OUTPUT_FILE = f"audio/translated/{uuid.uuid4().hex}.mp3"
 
 # Audio Settings
 SAMPLE_RATE = 16000

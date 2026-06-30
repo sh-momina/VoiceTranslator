@@ -1,7 +1,7 @@
 from threading import Thread
 
 import shared
-
+from queue import Empty
 from shared import audio_queue
 from shared import speech_queue
 
@@ -14,11 +14,14 @@ class ProcessorThread(Thread):
 
     def run(self):
 
-        while shared.running:
+        while shared.running.is_set(): 
 
             print("Processor waiting...")
 
-            audio = audio_queue.get()
+            try:
+                audio = audio_queue.get(timeout=1)
+            except Empty:
+                continue
 
             print("Processor received audio")
 

@@ -1,4 +1,5 @@
 from threading import Thread
+from queue import Empty
 
 from shared import speech_queue
 from shared import running
@@ -12,15 +13,28 @@ class SpeakerThread(Thread):
 
     def run(self):
 
-        while running:
+        try:
 
-            print("Speaker waiting...")
+            while running.is_set():
 
-            voice = speech_queue.get()
+                print("Speaker waiting...")
 
-            print("Playing through VB-CABLE...")
+                try:
+                    voice = speech_queue.get(timeout=1)
 
-            play_audio(
-                voice,
-                output_device=VB_CABLE_INPUT
-            )
+                except Empty:
+                    continue
+
+                print("Playing through VB-CABLE...")
+
+                play_audio(
+                    voice,
+                    output_device=VB_CABLE_INPUT
+                )
+
+        except Exception as e:
+
+            print("SPEAKER THREAD ERROR:", e)
+
+            import traceback
+            traceback.print_exc()

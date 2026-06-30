@@ -3,7 +3,7 @@ import uuid
 import os
 import edge_tts
 
-OUTPUT_FOLDER = "audio/output"
+OUTPUT_FOLDER = "audio/translated"  
 
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 

@@ -1,10 +1,14 @@
-import shared
-
 from setup import setup_languages
+import time
+import shared
 
 from threads.listener import ListenerThread
 from threads.processor import ProcessorThread
 from threads.speaker import SpeakerThread
+
+from incoming.incoming_listener import IncomingListener
+from incoming.incoming_processor import IncomingProcessor
+from incoming.incoming_speaker import IncomingSpeaker
 
 
 def main():
@@ -13,36 +17,46 @@ def main():
     print(" Live Voice Translator")
     print("======================================")
 
-    my_lang, other_lang = setup_languages()
+    my_language, other_language = setup_languages()
 
-    shared.my_language = my_lang
-    shared.other_language = other_lang
+    shared.my_language = my_language
+    shared.other_language = other_language
 
-    listener = ListenerThread()
-    processor = ProcessorThread()
-    speaker = SpeakerThread()
+    threads = [
 
-    listener.daemon = True
-    processor.daemon = True
-    speaker.daemon = True
+        ListenerThread(),
+        ProcessorThread(),
+        SpeakerThread(),
 
-    listener.start()
-    processor.start()
-    speaker.start()
+        IncomingListener(),
+        IncomingProcessor(),
+        IncomingSpeaker()
+
+    ]
+
+    for thread in threads:
+        thread.daemon = True
+        thread.start()
 
     print("\nTranslator Started")
-    print("Press Ctrl + C to stop.\n")
+    print("Outgoing Translation : Running")
+    print("Incoming Translation : Running")
+    print("\nPress Ctrl + C to stop.\n")
 
     try:
 
-        while True:
-            pass
+        while shared.running.is_set():
+            time.sleep(1)
 
     except KeyboardInterrupt:
 
-        shared.running = False
+        print("\nStopping...")
 
-        print("\nTranslator Stopped")
+    finally:
+
+        shared.running.clear()
+
+        print("Translator Stopped")
 
 
 if __name__ == "__main__":

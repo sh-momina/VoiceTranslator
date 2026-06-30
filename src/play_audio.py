@@ -1,6 +1,7 @@
+import os
 import sounddevice as sd
 import soundfile as sf
-import os
+import shared
 
 
 def play_audio(audio_file, output_device=None):
@@ -15,6 +16,14 @@ def play_audio(audio_file, output_device=None):
 
     data, samplerate = sf.read(audio_file, dtype="float32")
 
+    if output_device is None:
+        print("Playing on default speaker...")
+    else:
+        print(f"Playing on device {output_device}...")
+
+    # Tell IncomingListener not to record
+    shared.playing_audio.set()
+
     sd.play(
         data,
         samplerate,
@@ -22,5 +31,8 @@ def play_audio(audio_file, output_device=None):
     )
 
     sd.wait()
+
+    # Allow recording again
+    shared.playing_audio.clear()
 
     print("Finished")

@@ -10,7 +10,7 @@ class ListenerThread(Thread):
 
     def run(self):
 
-        while running:
+        while running.is_set():
 
             audio = record_audio()
 
