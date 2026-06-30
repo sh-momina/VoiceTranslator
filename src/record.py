@@ -67,7 +67,7 @@ def record_audio():
 
             volume = np.sqrt(np.mean(chunk ** 2))
 
-            print(f"Volume : {volume:.5f}")
+            # print(f"Volume : {volume:.5f}")
 
             if not recording:
 
