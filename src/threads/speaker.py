@@ -1,8 +1,9 @@
 from threading import Thread
 
-import shared
-
 from shared import speech_queue
+from shared import running
+
+from config import VB_CABLE_INPUT
 
 from play_audio import play_audio
 
@@ -11,12 +12,15 @@ class SpeakerThread(Thread):
 
     def run(self):
 
-        while shared.running:
+        while running:
 
             print("Speaker waiting...")
 
             voice = speech_queue.get()
 
-            print("Speaker playing...")
+            print("Playing through VB-CABLE...")
 
-            play_audio(voice)
+            play_audio(
+                voice,
+                output_device=VB_CABLE_INPUT
+            )

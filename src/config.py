@@ -46,3 +46,15 @@ CHANNELS = 1
 BLOCK_DURATION = 0.03      # 30 ms
 SILENCE_DURATION = 1.0      # seconds
 THRESHOLD = 0.01            # only used as backup
+
+# -------------------------
+# Audio Devices
+# -------------------------
+
+MIC_DEVICE = 1
+
+SPEAKER_DEVICE = 4
+
+VB_CABLE_INPUT = 5
+
+VB_CABLE_OUTPUT = 2

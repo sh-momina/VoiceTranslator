@@ -1,31 +1,26 @@
-import pygame
-import time
+import sounddevice as sd
+import soundfile as sf
 import os
 
 
-def play_audio(audio_file):
+def play_audio(audio_file, output_device=None):
 
     print("\n==============================")
     print(" Play Audio")
     print("==============================")
 
-    pygame.mixer.init()
+    if not os.path.exists(audio_file):
+        print("Audio file not found.")
+        return
 
-    pygame.mixer.music.load(audio_file)
+    data, samplerate = sf.read(audio_file, dtype="float32")
 
-    pygame.mixer.music.play()
+    sd.play(
+        data,
+        samplerate,
+        device=output_device
+    )
 
-    while pygame.mixer.music.get_busy():
-
-        time.sleep(0.1)
-
-    pygame.mixer.music.unload()
-
-    pygame.mixer.quit()
-
-    try:
-        os.remove(audio_file)
-    except:
-        pass
+    sd.wait()
 
     print("Finished")
