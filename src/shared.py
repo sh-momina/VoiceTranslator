@@ -29,3 +29,14 @@ playing_audio = Event()
 
 my_language = None
 other_language = None
+
+
+last_input = ""
+last_translation = ""
+
+last_incoming = ""
+last_incoming_translation = ""
+
+status = "Ready"
+
+latency = 0
