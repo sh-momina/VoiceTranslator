@@ -82,16 +82,6 @@ It includes:
 
 ---
 
-## 📸 Screenshots
-
-*(To be added)*
-
-* Main Application Interface
-* Live Translation Example
-* System Architecture Diagram
-
----
-
 ## 👨‍💻 Author
 
 **Momina**
